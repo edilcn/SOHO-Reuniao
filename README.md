@@ -1,2 +1,3 @@
 # SOHO-Reuniao
-lalalala
+
+Código implementado com o framework "Thinger.IO"
