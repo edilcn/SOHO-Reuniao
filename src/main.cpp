@@ -73,28 +73,62 @@ void setup() {
     pinMode(SALA_4, OUTPUT);
     pinMode(SALA_5, OUTPUT);
 
-    digitalWrite(SALA_1, HIGH);
-    digitalWrite(SALA_2, HIGH);
-    digitalWrite(SALA_3, HIGH);
-    digitalWrite(SALA_4, HIGH);
-    digitalWrite(SALA_5, HIGH);
+    digitalWrite(SALA_1, LOW);
+    digitalWrite(SALA_2, LOW);
+    digitalWrite(SALA_3, LOW);
+    digitalWrite(SALA_4, LOW);
+    digitalWrite(SALA_5, LOW);
 
     thing.add_wifi(SSID_STA, SSID_PASSWORD);
 
-    thing["Sala_1"] << [](pson& in){
-      digitalWrite(SALA_1, in ? HIGH : LOW);
+    thing["Sala_1"] = [](pson& in, pson& out){
+      if(in.is_empty()){
+        in = (bool) digitalRead(SALA_1);
+        out = (bool) digitalRead(SALA_1);
+      }
+      else{
+        digitalWrite(SALA_1, in ? HIGH : LOW);
+      }
     };
-    thing["Sala_2"] << [](pson& in){
-      digitalWrite(SALA_2, in ? HIGH : LOW);
+
+    thing["Sala_2"] = [](pson& in, pson& out){
+      if(in.is_empty()){
+        in = (bool) digitalRead(SALA_2);
+        out = (bool) digitalRead(SALA_2);
+      }
+      else{
+        digitalWrite(SALA_2, in ? HIGH : LOW);
+      }
     };
-    thing["Sala_3"] << [](pson& in){
-      digitalWrite(SALA_3, in ? HIGH : LOW);
+
+    thing["Sala_3"] = [](pson& in, pson& out){
+      if(in.is_empty()){
+        in = (bool) digitalRead(SALA_3);
+        out = (bool) digitalRead(SALA_3);
+      }
+      else{
+        digitalWrite(SALA_3, in ? HIGH : LOW);
+      }
     };
-    thing["Sala_4"] << [](pson& in){
-      digitalWrite(SALA_4, in ? HIGH : LOW);
+
+    thing["Sala_4"] = [](pson& in, pson& out){
+      if(in.is_empty()){
+        in = (bool) digitalRead(SALA_4);
+        out = (bool) digitalRead(SALA_4);
+      }
+      else{
+        digitalWrite(SALA_4, in ? HIGH : LOW);
+      }
     };
-    thing["Sala_5"] << [](pson& in){
-      digitalWrite(SALA_5, in ? HIGH : LOW);
+
+    thing["Sala_5"] = [](pson& in, pson& out){
+      if(in.is_empty()){
+        in = (bool) digitalRead(SALA_5);
+        out = (bool) digitalRead(SALA_5);
+      }
+      else{
+        digitalWrite(SALA_5, in ? HIGH : LOW);
+      }
     };
 }
 
