@@ -16,8 +16,8 @@
 // #define DEVICE_CREDENTIAL "gAiu$u1wGJ9D"
 
 #define USERNAME "SHLabs"
-#define DEVICE_ID "reuniao_1"
-#define DEVICE_CREDENTIAL "0vPtNF4Mjngi"
+#define DEVICE_ID "NewYork"
+#define DEVICE_CREDENTIAL "dBIDlzmN4zQo"
 
 // Informações do WiFi
 #define SSID_STA "soholabs"
@@ -37,6 +37,8 @@ int8_t timeZone = -3;
 int8_t minutesTimeZone = 0;
 
 bool Status;
+bool FIRST_SETUP;
+bool RESTART;
 
 /*------------------------------NTP Client -----------------------------------*/
 void processSyncEvent (NTPSyncEvent_t ntpEvent) {
@@ -73,11 +75,14 @@ void setup() {
     pinMode(SALA_4, OUTPUT);
     pinMode(SALA_5, OUTPUT);
 
-    digitalWrite(SALA_1, LOW);
-    digitalWrite(SALA_2, LOW);
+    digitalWrite(SALA_1, HIGH);
+    digitalWrite(SALA_2, HIGH);
     digitalWrite(SALA_3, LOW);
     digitalWrite(SALA_4, LOW);
     digitalWrite(SALA_5, LOW);
+
+    FIRST_SETUP = true;
+    RESTART = false;
 
     thing.add_wifi(SSID_STA, SSID_PASSWORD);
 
@@ -88,6 +93,8 @@ void setup() {
       }
       else{
         digitalWrite(SALA_1, in ? HIGH : LOW);
+        Serial.print("Estado Sala 1: "); 
+        Serial.println(SALA_1);
       }
     };
 
@@ -98,6 +105,8 @@ void setup() {
       }
       else{
         digitalWrite(SALA_2, in ? HIGH : LOW);
+        Serial.print("Estado Sala 2: "); 
+        Serial.println(SALA_2);
       }
     };
 
@@ -108,6 +117,8 @@ void setup() {
       }
       else{
         digitalWrite(SALA_3, in ? HIGH : LOW);
+        Serial.print("Estado Sala 3: "); 
+        Serial.println(SALA_3);
       }
     };
 
@@ -118,6 +129,8 @@ void setup() {
       }
       else{
         digitalWrite(SALA_4, in ? HIGH : LOW);
+        Serial.print("Estado Sala 4: "); 
+        Serial.println(SALA_4);
       }
     };
 
@@ -128,18 +141,43 @@ void setup() {
       }
       else{
         digitalWrite(SALA_5, in ? HIGH : LOW);
+        Serial.print("Estado Sala 5: "); 
+        Serial.println(SALA_5);
       }
     };
-}
 
+    thing["device"] << [](pson& in){
+      if(in.is_empty()){
+        in = (bool) RESTART;
+      }
+      else{
+        RESTART = in;
+      }
+    }
+
+    thing["resource"] = [](){
+        if (RESTART == true){
+          ESP.restart();
+        }
+    };
 void loop() {
     thing.handle();
     if ((WiFi.status() == WL_CONNECTED) && !(WiFi.localIP() == INADDR_NONE)){
       Status = true;
+      // Serial.print("Conectado");
     }
     else Status = false;
     if (syncEventTriggered) {
           processSyncEvent (ntpEvent);
           syncEventTriggered = false;
+          // Serial.print("Desconectado");
+    }
+    if (FIRST_SETUP == true){
+      pson data;
+      data["meeting_room"] = DEVICE_ID;
+      data["meeting_roomstatus"] = "up";
+      thing.call_endpoint("booking_id", data);
+      Serial.println("Endpoint chamado");
+      FIRST_SETUP = false;
     }
 }
